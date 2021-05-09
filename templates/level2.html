@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Alien World</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Freckle+Face&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/level1.css">
+  <script src="/static/index.js"></script>
+  <link rel="icon" href="/static/img_avatar.png">
+  <style>
+    .ques{
+      font-size: larger;
+      font-family: 'Freckle Face', cursive;
+    }
+    /* Remove the navbar's default margin-bottom and rounded borders */
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {
+      height: auto;
+    }
+
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #080808;
+      height: 100vh;
+    }
+
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: rgb(3, 3, 3);
+      color: white;
+      padding: 15px;
+    }
+
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+
+      .row.content {
+
+        height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- navbar -->
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Logo</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="index.html">Home</a></li>
+        </ul>
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="leaderboard.html">Leaderboard</a></li>
+        </ul>
+        {% if user.is_authenticated %}
+        <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a href="#">Hiii {{request.user}}</a></li>
+          <li><a href="/logout"> <span data-target="/logout" class=" glyphicon glyphicon-log-in"></span>
+              Logout</a></li>
+        </ul>
+        {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- center -->
+  <div class="container-fluid text-center">
+    <div style="background-color:rgb(77, 75, 75)" class="row content">
+      <div class="col-sm-2 sidenav">
+
+
+        <ul class="nav nav-pills nav-stacked">
+          <li style="font-size: 35px; font-weight:bold;font-family: 'Freckle Face', cursive;"><a href="#section3">Level2</a></li>
+          
+          <li>
+            <h2 style="color:rgb(247, 247, 247);">CLICKS</h2>
+          </li>
+          <li>
+            <h2 style="color:rgb(247, 247, 247);" id="123">{{cnt|safe}}</h2>
+          </li>
+          <li>
+            <h2 style="color:rgb(247, 247, 247);">SCORE</h2>
+          </li>
+          <li>
+            <h1 id="scr" style="color:rgb(250, 249, 249);">{{userScore}}</h1>
+          </li>
+          <li><a href="level3.html"> <span data-target="" class=" glyphicon glyphicon-log-in"></span>
+              Skip/Next level</a>
+          </li>
+
+          <br>
+        </ul><br>
+
+        {% csrf_token %}
+      </div>
+      <div class="col-sm-9 text-left">
+        <div class="mid">
+          <!-- question -->
+          <div class="ques">
+           <p>I am a work of art🖌️</p>
+           <p>I always goes up.....You can hide me but cannot control me.....</p>
+          </div>
+          <!-- images -->
+          {% csrf_token %}
+          {% load static %}
+          <div class="cont">
+            {% for i in level2imag|slice:"0:" %}
+            <img id={{i.img_id}}
+                onclick="fun('{{i.img_id}}')" class="image"
+                style=" margin: 5px;border: 2px solid black; border-radius:10px" src='{{i.img_src}}' alt="">
+            {% endfor %}
+            <div class="form">
+              <input style="font-family: 'Freckle Face', cursive;" id="res" type="text" placeholder="Answer"> 
+              <br> 
+              <button style=" font-family: 'Freckle Face', cursive;" class="bt" onclick="ans()">Submit</button>
+              <h2 style="color: black; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">
+                <p id="dis"></p>
+              </h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <footer class="container-fluid text-center">
+    <p>Footer Text</p>
+  </footer>
+
+  <!-- javascript -->
+  <script>
+
+    document.getElementById('scr').innerHTML = "{{userScore|safe}}";
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    function ans() {
+      var image = document.getElementById('im1');
+      var A = document.getElementById('res').value;
+      answercheck(image, A);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    async function answercheck(image, A) {
+      const csrfToken = getCookie('csrftoken');
+      const request = new Request(
+        '/answerCheck',
+        { headers: { 'X-CSRFToken': csrfToken } }
+      );
+
+      const result = await fetch(request, {
+        method: 'POST',
+        body: JSON.stringify({ level: "level2", ans: A }),
+        mode: 'same-origin'  // Do not send CSRF token to another domain.
+      })
+
+      const responseBdy = await result.json();
+
+      if (responseBdy['flag'] == true) {
+        document.getElementById('dis').innerHTML = "hurray!!! 😄";
+        document.getElementById('scr').innerHTML = responseBdy['userScore'];
+      }
+      else { document.getElementById('dis').innerHTML = "Sorry 👎"; }
+
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    function fun(idd) {
+      console.log("{{userScore|safe}}");
+      sendData(idd);
+      var id = idd;
+      alert("you have clicked an image");
+    }
+
+
+    function getCookie(name) {
+      if (!document.cookie) {
+        return null;
+      }
+
+      const xsrfCookies = document.cookie.split(';')
+        .map(c => c.trim())
+        .filter(c => c.startsWith(name + '='));
+
+      if (xsrfCookies.length === 0) {
+        return null;
+      }
+      return decodeURIComponent(xsrfCookies[0].split('=')[1]);
+    }
+
+
+    //disable display of an image;
+    async function sendData(id) {
+      //alert(id)
+      const csrfToken = getCookie('csrftoken');
+      const request = new Request(
+        '/click2',
+        { headers: { 'X-CSRFToken': csrfToken } }
+      );
+
+      const result = await fetch(request, {
+        method: 'POST',
+        body: JSON.stringify({ id: id }),
+        mode: 'same-origin'  // Do not send CSRF token to another domain.
+      })
+
+      const responseBody = await result.json();
+      var x=document.getElementById(id);
+        console.log(x)
+        
+    
+     $(x).popover({title:'You get it',content:responseBody['img_data']}).popover('toggle');
+
+      if (responseBody['cnt'] <= 3 && responseBody['cnt'] >= 0) {
+        document.getElementById('123').innerHTML = responseBody['cnt'];
+        document.getElementById('scr').innerHTML = responseBody['userScore'];
+      }
+      else {
+        document.getElementById('123').innerHTML = 0;
+      }
+      console.log(responseBody)
+
+      if (responseBody['cnt'] == 0) {
+        alert("YOU HAVE LEFT NO CLICKS") 
+     }
+
+    }
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    $('123').load(document.URL + '123');
+   
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  </script>
+
+</body>
+
+</html>

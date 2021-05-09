@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="/static/index.css">
+  <script src="/static/index.js"></script>
+  <link rel="stylesheet" href="/static/level1.css">
+  <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {
+      height: auto;
+      background-image: url(/static/mygif.gif) no-repeat;
+
+    }
+
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #080808;
+      height: 100%;
+    }
+
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: rgb(3, 3, 3);
+      color: white;
+      padding: 15px;
+    }
+
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+
+      .row.content {
+
+        height: auto;
+      }
+
+    }
+
+    @media screen and (max-width: 1025px) {
+      .cont {
+        height: 100vh;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <!-- navbar -->
+
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Logo</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav ">
+          <li class="active"><a href="index.html">Home</a></li>
+        </ul>
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="leaderboard.html">Leaderboard</a></li>
+        </ul>
+
+        {% if user.is_authenticated %}
+          <ul class="nav navbar-nav navbar-right">
+              <li class="active"><a href="#">Hiii {{request.user}}</a></li>  
+            <li ><a  href="/logout"  > <span
+             data-target="/logout"   class=" glyphicon glyphicon-log-in"></span> Logout</a></li>
+          </ul>
+        {% else %}
+        <ul class="nav navbar-nav ">
+          <li class="active"><a href="#" data-toggle="modal" data-target="#RegisterModal">Register</a></li> -->
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#" data-toggle="modal" data-target="#loginModal"><span
+                class=" glyphicon glyphicon-log-in"></span> LogIn</a></li>
+        </ul>
+        {% endif %}
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- center -->
+  <div class="container-fluid text-center">
+    <div style=" background-color:gray" class="row content">
+      <div id =mes >
+      {% for message in messages %}
+      <div class="alert alert-success show " role="alert">
+        <strong>Message : </strong> {{ message }}
+        <button onclick="mess()" style="border:0px ;margin-left:10px " type="button" class="btn-close " data-bs-dismiss="alert" aria-label="Close"> ❎ </button>
+      </div>
+      {% endfor %}
+    </div>
+      <center>
+        <div class="cont ">
+          {% if user.is_authenticated %}
+          <a style="text-decoration: none;" href="{{Clevel|safe}}.html"><button style="font-family:Verdana, Geneva, Tahoma, sans-serif; font-weight:bolder" data-toggle="popover" title="{{reques.user }}" class="btn animated bounce infinite" alt="Transparent MDB Logo" id="animated-img1"> Play</button> </a>
+          {% else %}
+          <button style="font-family:Verdana, Geneva, Tahoma, sans-serif; font-weight:bolder" class="btn">Play</button>
+          {% endif %}
+        </div>
+      </center>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <footer class="container-fluid text-center">
+    <p>Footer Text</p>
+  </footer>
+
+  <!-- LoginModal -->
+  <!-- Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Login</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="/login">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="loginusername" class="form-label">Username:</label>
+              <input name="loginusername" type="text" class="form-control" id="loginusername">
+            </div>
+            <div class="mb-3">
+              <label for="loginpass" class="form-label">Password:</label>
+              <input name="loginpass" type="password" class="form-control" id="loginpass">
+            </div>
+            <button type="submit" class="btn btn-success my-4 ">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- RegisterModal-->
+  <div class="modal fade" id="RegisterModal" tabindex="-1" role="dialog" aria-labelledby="RegisterModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="RegisterModalLabelTitle">Register</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="/register">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="username" class="form-label">Username:</label>
+              <input name="username" type="text" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3">
+              <label for="firstname" class="form-label">First Name:</label>
+              <input name="firstname" type="text" class="form-control" id="firstname">
+            </div>
+            <div class="mb-3">
+              <label for="lastname" class="form-label">Last Name:</label>
+              <input name="lastname" type="text" class="form-control" id="lastname">
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email address:</label>
+              <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" required>
+              <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+              <label for="pass1" class="form-label">Password:</label>
+              <input name="pass1" type="password" class="form-control" id="pass1" required>
+            </div>
+            <div class="mb-3">
+              <label for="pass2" class="form-label">Confirm Password:</label>
+              <input name="pass2" type="password" class="form-control" id="pass2" required>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="exampleCheck1">
+              <label class="form-check-label" for="exampleCheck1">Check me out</label>
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+          </form>
+          <p class="text-center">If you already have an account, <a href="/login">login</a> instead.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- javascript -->
+  <script>
+
+    function mess()
+    {
+      document.getElementById('mes').style.display = "none"
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  </script>
+</body>
+
+</html>
